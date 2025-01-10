@@ -15,12 +15,12 @@ packages = find_packages()
 
 def readme_file(param):
     # 读取文件内容
-    return open(param, 'r').read()
+    return open(param, 'r', encoding='utf-8').read()
 
 
 setup(
     name='ics_utils',
-    version='0.0.4',
+    version='0.0.5',
     author='hanyanling',
     description="爬虫工具包",
     long_description=readme_file('README.md'),

@@ -219,5 +219,60 @@ class WxWork:
         return self.send_msg('voice', file_path=file_path, file_content=file_content, show_name=show_name)
 
 
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
 
+class EmailSender:
+    def __init__(self, smtp_server, smtp_port, sender_email, sender_password, receiver_email):
+        self.smtp_server = smtp_server
+        self.smtp_port = smtp_port
+        self.sender_email = sender_email
+        self.sender_password = sender_password
+        self.receiver_email = receiver_email
+
+    def send_email(self, subject, body, attachments=None):
+        """
+        发送邮件
+
+        :param subject: 邮件主题
+        :param body: 邮件正文
+        :param attachments: 附件列表，每个元素是一个元组 (文件名, 文件内容)
+        :return: 成功返回True，失败返回False
+        """
+        msg = MIMEMultipart()
+        msg['From'] = self.sender_email
+        msg['To'] = self.receiver_email
+        msg['Subject'] = subject
+
+        # 添加邮件正文
+        msg.attach(MIMEText(body, 'plain'))
+
+        # 添加附件
+        if attachments:
+            for filename, file_content in attachments:
+                part = MIMEApplication(file_content)
+                part.add_header('Content-Disposition', 'attachment', filename=filename)
+                msg.attach(part)
+
+        try:
+            with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
+                server.starttls()  # 启用TLS加密
+                server.login(self.sender_email, self.sender_password)
+                server.send_message(msg)
+            return True
+        except Exception as e:
+            print(f"发送邮件时出错: {e}")
+            return False
+
+    def send_simple_email(self, subject, body):
+        """
+        发送简单的纯文本邮件
+
+        :param subject: 邮件主题
+        :param body: 邮件正文
+        :return: 成功返回True，失败返回False
+        """
+        return self.send_email(subject, body)
 
