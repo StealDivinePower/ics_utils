@@ -6,6 +6,7 @@
 ---------
 @summary:
 """
+from datetime import datetime, timedelta
 
 
 class Singleton(object):
@@ -44,5 +45,36 @@ def get_cookies_from_str(cookie_str):
         cookies[key] = value
 
     return cookies
+
+
+def get_time_range(start_time_str, end_time_str, is_timestamp=False, time_format="%Y-%m-%d"):
+    """
+    返回给定时间范围内的所有时间，包含开始时间和结束时间。
+
+    :param start_time_str: 开始时间字符串
+    :param end_time_str: 结束时间字符串
+    :param is_timestamp: 布尔值，如果为True，返回10位时间戳；否则返回格式化的时间字符串
+    :param time_format: 时间格式字符串，仅在is_timestamp为False时有效
+    :return: 时间日期列表，包含开始时间和结束时间
+    """
+    # 将字符串转换为datetime对象
+    start_time = datetime.strptime(start_time_str, time_format)
+    end_time = datetime.strptime(end_time_str, time_format)
+
+    # 确保开始时间早于结束时间
+    if start_time > end_time:
+        raise ValueError("开始时间不能晚于结束时间")
+
+    # 计算时间范围内的所有时间
+    time_range = []
+    current_time = start_time
+    while current_time <= end_time:
+        if is_timestamp:
+            time_range.append(int(current_time.timestamp()))
+        else:
+            time_range.append(current_time.strftime(time_format))
+        current_time += timedelta(days=1)  # 每天一个时间点
+
+    return time_range
 
 
