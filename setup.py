@@ -20,7 +20,7 @@ def readme_file(param):
 
 setup(
     name='ics_utils',
-    version='0.0.5',
+    version='0.0.6',
     author='hanyanling',
     description="爬虫工具包",
     long_description=readme_file('README.md'),
@@ -30,5 +30,9 @@ setup(
     python_requires='>=3.6',
     requires=[
         'requests',
+        'pandas',
+        'openpyxl',
+        'lxml',
+        'xlsx2csv',
     ]
 )

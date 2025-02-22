@@ -8,6 +8,8 @@
 """
 from datetime import datetime, timedelta
 
+import pandas as pd
+
 
 class Singleton(object):
     def __init__(self, cls):
@@ -76,5 +78,28 @@ def get_time_range(start_time_str, end_time_str, is_timestamp=False, time_format
         current_time += timedelta(days=1)  # 每天一个时间点
 
     return time_range
+
+
+def is_empty_data(data):
+    """
+    判断给定的数据是否为空。
+
+    :param data: 给定的数据
+    :return: 如果数据为空，则返回True；否则返回False
+    """
+    if data is None:
+        return True
+    if type(data) is pd.DataFrame:
+        return data.empty
+    if type(data) is pd.Series:
+        return data.empty
+    if type(data) is list:
+        return len(data) == 0
+    if type(data) is dict:
+        return len(data) == 0
+    if type(data) is str:
+        return data.strip() == ""
+    return False
+
 
 
