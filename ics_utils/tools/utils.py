@@ -36,17 +36,24 @@ class LazyProperty:
 
 
 def get_cookies_from_str(cookie_str):
+    """
+    将cookie字符串解析为字典格式
+
+    :param cookie_str: cookie字符串，格式为"key1=value1; key2=value2"
+    :return: 返回解析后的字典，格式为{key1: value1, key2: value2}
+    """
     cookies = {}
     for cookie in cookie_str.split(";"):
-        cookie = cookie.strip()
-        if not cookie:
+        cookie = cookie.strip()  # 去除前后空格
+        if not cookie:  # 跳过空字符串
             continue
-        key, value = cookie.split("=", 1)
-        key = key.strip()
-        value = value.strip()
-        cookies[key] = value
+        key, value = cookie.split("=", 1)  # 以第一个等号分割key和value
+        key = key.strip()  # 去除key的前后空格
+        value = value.strip()  # 去除value的前后空格
+        cookies[key] = value  # 将key-value对存入字典
 
     return cookies
+
 
 
 def get_time_range(start_time_str, end_time_str, is_timestamp=False, time_format="%Y-%m-%d"):
