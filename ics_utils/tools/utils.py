@@ -56,7 +56,7 @@ def get_cookies_from_str(cookie_str):
 
 
 
-def get_time_range(start_time_str, end_time_str, is_timestamp=False, time_format="%Y-%m-%d"):
+def get_time_range(start_time_str, end_time_str, is_timestamp=False, time_format="%Y-%m-%d", **time_delta):
     """
     返回给定时间范围内的所有时间，包含开始时间和结束时间。
 
@@ -64,6 +64,7 @@ def get_time_range(start_time_str, end_time_str, is_timestamp=False, time_format
     :param end_time_str: 结束时间字符串
     :param is_timestamp: 布尔值，如果为True，返回10位时间戳；否则返回格式化的时间字符串
     :param time_format: 时间格式字符串，仅在is_timestamp为False时有效
+    :param time_delta: 时间增量，用于计算时间范围
     :return: 时间日期列表，包含开始时间和结束时间
     """
     # 将字符串转换为datetime对象
@@ -73,7 +74,7 @@ def get_time_range(start_time_str, end_time_str, is_timestamp=False, time_format
     # 确保开始时间早于结束时间
     if start_time > end_time:
         raise ValueError("开始时间不能晚于结束时间")
-
+    time_delta = time_delta or dict(days=1)
     # 计算时间范围内的所有时间
     time_range = []
     current_time = start_time
@@ -82,7 +83,7 @@ def get_time_range(start_time_str, end_time_str, is_timestamp=False, time_format
             time_range.append(int(current_time.timestamp()))
         else:
             time_range.append(current_time.strftime(time_format))
-        current_time += timedelta(days=1)  # 每天一个时间点
+        current_time += timedelta(time_delta)  # 每天一个时间点
 
     return time_range
 
@@ -94,12 +95,12 @@ def is_empty_data(data):
     :param data: 给定的数据
     :return: 如果数据为空，则返回True；否则返回False
     """
-    if data is None:
-        return True
     if type(data) is pd.DataFrame:
         return data.empty
     if type(data) is pd.Series:
         return data.empty
+    if data is None:
+        return True
     if type(data) is list:
         return len(data) == 0
     if type(data) is dict:
@@ -107,6 +108,38 @@ def is_empty_data(data):
     if type(data) is str:
         return data.strip() == ""
     return False
+
+
+def timestamp_to_date(timestamp, format_str="%Y-%m-%d %H:%M:%S"):
+    """
+    将10位或13位时间戳转换为日期字符串
+
+    :param timestamp: 时间戳，可以是10位（秒级）或13位（毫秒级）
+    :param format_str: 日期格式字符串，默认为"%Y-%m-%d %H:%M:%S"
+    :return: 格式化后的日期字符串
+    """
+    # 如果是13位时间戳，先转换为10位
+    if len(str(timestamp)) == 13:
+        timestamp = int(timestamp) // 1000
+
+    # 将时间戳转换为datetime对象
+    return datetime.fromtimestamp(int(timestamp)).strftime(format_str)
+
+
+
+def date_to_timestamp(date_str, format_str="%Y-%m-%d %H:%M:%S", milliseconds=False):
+    """
+    将日期字符串转换为时间戳
+
+    :param date_str: 日期字符串
+    :param format_str: 日期格式字符串，默认为"%Y-%m-%d %H:%M:%S"
+    :param milliseconds: 是否返回13位时间戳，默认为False（返回10位时间戳）
+    :return: 时间戳（10位或13位）
+    """
+    dt = datetime.strptime(date_str, format_str)
+    timestamp = int(dt.timestamp())
+    return timestamp * 1000 if milliseconds else timestamp
+
 
 
 
