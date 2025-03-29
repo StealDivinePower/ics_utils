@@ -6,6 +6,7 @@
 ---------
 @summary:
 """
+import hashlib
 from datetime import datetime, timedelta
 
 import pandas as pd
@@ -139,6 +140,18 @@ def date_to_timestamp(date_str, format_str="%Y-%m-%d %H:%M:%S", milliseconds=Fal
     dt = datetime.strptime(date_str, format_str)
     timestamp = int(dt.timestamp())
     return timestamp * 1000 if milliseconds else timestamp
+
+
+def md5_str(string):
+    """
+    计算字符串的MD5哈希值
+
+    :param string: 需要计算MD5哈希值的字符串
+    :return: 字符串的MD5哈希值
+    """
+    md5 = hashlib.md5()
+    md5.update(string.encode('utf-8'))
+    return md5.hexdigest()
 
 
 
