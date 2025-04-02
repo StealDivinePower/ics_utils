@@ -154,5 +154,26 @@ def md5_str(string):
     return md5.hexdigest()
 
 
+def column_name_to_index(col_name):
+    """
+    将 Excel 列名（如 "A", "AA"）转换为数字索引（从 0 开始）。
+    """
+    index = 0
+    for char in col_name:
+        index = index * 26 + (ord(char) - ord('A') + 1)
+    return index - 1  # 转换为从 0 开始的索引
 
+
+def generate_excel_columns(max_index):
+    """
+    根据最大索引生成从 "A" 开始的所有列名。
+    """
+    def index_to_column(index):
+        col = ""
+        while index >= 0:
+            col = chr((index % 26) + ord('A')) + col
+            index = index // 26 - 1
+        return col
+
+    return [index_to_column(i) for i in range(max_index + 1)]
 
